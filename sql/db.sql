@@ -36,7 +36,7 @@ CREATE TABLE `book_history` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `book_history_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`),
   CONSTRAINT `book_history_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,6 +45,7 @@ CREATE TABLE `book_history` (
 
 LOCK TABLES `book_history` WRITE;
 /*!40000 ALTER TABLE `book_history` DISABLE KEYS */;
+INSERT INTO `book_history` VALUES (6,'8932000133766','create','title',NULL,'Atomic Habits - Thay Đổi Tí Hon Hiệu Quả Bất Ngờ (Tái Bản 2023)',1,'2024-12-05 15:16:03'),(7,'8934974165569','update','author','John Doe','Robert Greene',2,'2024-12-05 15:16:03'),(8,'8934974165576','delete','price','79.800',NULL,2,'2024-12-05 15:16:03'),(9,'8934974171485','update','description','A book about a young wizard.','A fantasy novel about a young wizard.',3,'2024-12-05 15:16:03'),(10,'8935086844342','create','genre',NULL,'Mystery',1,'2024-12-05 15:16:03');
 /*!40000 ALTER TABLE `book_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +176,7 @@ CREATE TABLE `users` (
   `role` enum('manager','staff') NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +185,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','khaipham182@gmail.com','d411f1744f61390ffbda6da5db5eb6cb7c7824b80d6cdfa613308e48585146c2','95df826f11d961b3e34bb2bed79a5ddf','manager','2024-12-01 15:35:51'),(2,'staff1','123@gmail.com','9df6ed93bde74504f6bfdcdc6ee99461a9992696a4dbaef0aff14ed77a9e5985','adcbe3918485d28004b98e99730d9131','staff','2024-12-01 15:35:51'),(3,'staff2','123@gmail.com','hashed_password3','random_salt3','staff','2024-12-01 15:35:51');
+INSERT INTO `users` VALUES (1,'admin','khaipham182@gmail.com','d411f1744f61390ffbda6da5db5eb6cb7c7824b80d6cdfa613308e48585146c2','95df826f11d961b3e34bb2bed79a5ddf','manager','2024-12-01 15:35:51'),(2,'staff1','123@gmail.com','9df6ed93bde74504f6bfdcdc6ee99461a9992696a4dbaef0aff14ed77a9e5985','adcbe3918485d28004b98e99730d9131','staff','2024-12-01 15:35:51'),(3,'staff2','123@gmail.com','d411f1744f61390ffbda6da5db5eb6cb7c7824b80d6cdfa613308e48585146c2','95df826f11d961b3e34bb2bed79a5ddf','staff','2024-12-01 15:35:51'),(6,'giakhai182','aaff@a.com','8c3280c9cdca3751d0c3b53a0d4db9c78dc90eef53ca30bc6a0c2ee5476d20cb','c77875e24fb0a01f94e3acbd639c9c71','staff','2024-12-05 20:30:47');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -197,4 +198,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-05 16:07:21
+-- Dump completed on 2024-12-06  4:17:47

@@ -3,6 +3,9 @@ package model;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
 import util.DBConnection;
 import util.OTPGenerator;
 import util.SHA256WithSalt;
@@ -47,7 +50,7 @@ public class UserDAO {
 	}
 
 
-	public static boolean register(String username,String email, String password) {
+	public static boolean register(String username,String email, String password, String role) {
         // Tạo salt
         String salt = SHA256WithSalt.generateSalt();
 
@@ -56,14 +59,13 @@ public class UserDAO {
 
         try (Connection conn = DBConnection.getConnection()) {
             // Câu lệnh SQL để thêm người dùng mới
-            String sql = "INSERT INTO users (username, email, password_hash, salt) VALUES (?,?,?,?)";
-
+            String sql = "INSERT INTO users (username, email, password_hash, salt, role) VALUES (?,?,?,?,?)";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, username);
                 stmt.setString(2, email);
                 stmt.setString(3, hashedPassword);
                 stmt.setString(4, salt);
-
+                stmt.setString(5, role);
                 // Thực thi câu lệnh
                 int rowsInserted = stmt.executeUpdate();
                 return rowsInserted > 0; // Trả về true nếu thêm thành công
@@ -73,6 +75,39 @@ public class UserDAO {
         }
         return false;
     }
+	
+	public static boolean updateUser(String username, String email, String role) {
+	    try (Connection conn = DBConnection.getConnection()) {
+	        String sql = "UPDATE users SET email = ?, role = ? WHERE username = ?";
+	        
+	        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+	            stmt.setString(1, email);
+	            stmt.setString(2, role);
+	            stmt.setString(3, username);
+
+	            int rowsUpdated = stmt.executeUpdate();
+	            return rowsUpdated > 0; 
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+	
+	public static boolean deleteUser(String username) {
+	    try (Connection conn = DBConnection.getConnection()) {
+	        String sql = "DELETE FROM users WHERE username = ?";
+	        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+	            stmt.setString(1, username);
+	            int rowsDeleted = stmt.executeUpdate();
+	            return rowsDeleted > 0;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+	
 	public static boolean checkUserExists(String username) {
         boolean userExists = false;
         String query = "SELECT * FROM users WHERE username = ? or email = ?";
@@ -175,16 +210,16 @@ public class UserDAO {
         }
     }
 
-    public static void cleanupExpiredOTP() {
-        String sql = "DELETE FROM otp WHERE expiration_time < ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void cleanupExpiredOTP() {
+//        String sql = "DELETE FROM otp WHERE expiration_time < ?";
+//        try (Connection conn = DBConnection.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+//            stmt.executeUpdate();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
     
     public static boolean canResendOTP(String username) {
 		String sql = "SELECT timestamp FROM otp WHERE username = ? ORDER BY timestamp DESC LIMIT 1";
@@ -256,68 +291,6 @@ public class UserDAO {
         }
         return username;
     }
-
-    public static boolean checkUserExistsByGoogleId(String googleId) {
-        boolean userExists = false;
-        String query = "SELECT * FROM users WHERE google_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, googleId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                userExists = true; // Nếu kết quả tồn tại, user đã tồn tại
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return userExists;
-    }
-
-    public static boolean addUserGoogle(String username, String email, String googleId) {
-    	String passwordString = OTPGenerator.generateOTP();
-    	String salt = SHA256WithSalt.generateSalt();
-
-        // Hash mật khẩu với salt
-        String hashedPassword = SHA256WithSalt.hashPasswordWithSalt(passwordString, salt);
-        try (Connection conn = DBConnection.getConnection()) {
-            // Câu lệnh SQL để thêm người dùng mới
-            String sql = "INSERT INTO users (username, email, google_id, password_hash, salt) VALUES (?,?,?,?,?)";
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, username);
-                stmt.setString(2, email);
-                stmt.setString(3, googleId); // Lưu google_id
-                stmt.setString(4, hashedPassword);
-                stmt.setString(5, salt);
-
-                // Thực thi câu lệnh
-                int rowsInserted = stmt.executeUpdate();
-                return rowsInserted > 0; // Trả về true nếu thêm thành công
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-    
-    public static boolean loginWithGoogle(String googleId, String username, String email) {
-        // Kiểm tra xem tài khoản Google đã tồn tại trong cơ sở dữ liệu chưa
-        if (checkUserExistsByGoogleId(googleId)) {
-            System.out.println("Tài khoản Google đã tồn tại.");
-            return true; // Tài khoản đã tồn tại, cho phép đăng nhập
-        } else {
-            // Nếu chưa tồn tại, thêm tài khoản Google mới vào cơ sở dữ liệu
-            boolean isAdded = addUserGoogle(username, email, googleId);
-            if (isAdded) {
-                System.out.println("Tạo tài khoản Google mới thành công.");
-                return true; // Tài khoản Google đã được thêm thành công
-            } else {
-                System.out.println("Thêm tài khoản Google không thành công.");
-                return false; // Thêm tài khoản không thành công
-            }
-        }
-    }
-    
     public static boolean checkEmailExists(String email) {
         String query = "SELECT COUNT(*) FROM users WHERE email = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -333,18 +306,24 @@ public class UserDAO {
         return false;
     }
 
-    public static void main(String[] args) {
-        String username = "giakhai182";
-        String otp = "104079";
-        int a = verifyOTP(username,otp);
-        if (a == 1) {
-            System.out.println("Đăng nhập thành công!");
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        String query = "SELECT username, email, role FROM users";
+        
+        try (PreparedStatement statement = DBConnection.getConnection().prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            
+            while (resultSet.next()) {
+                String username = resultSet.getString("username");
+                String email = resultSet.getString("email");
+                String role = resultSet.getString("role");
+                
+                users.add(new User(username, email, role));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();  // Log lỗi nếu có
         }
-        else if (a == -1 ) {
-        	System.out.println("Het Han");
-		}
-        else if (a == 0) {
-        	System.out.println("Sai");
-		}
+
+        return users;
     }
 }

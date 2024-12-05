@@ -10,4 +10,25 @@
     <servlet-name>BookServlet</servlet-name>
     <url-pattern>/BookServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>BookHistory</display-name>
+    <servlet-name>BookHistory</servlet-name>
+    <servlet-class>controller.BookHistory</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BookHistory</servlet-name>
+    <url-pattern>/BookHistory</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>BookHistoryServlet</display-name>
+    <servlet-name>BookHistoryServlet</servlet-name>
+    <servlet-class>controller.BookHistoryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BookHistoryServlet</servlet-name>
+    <url-pattern>/BookHistoryServlet</url-pattern>
+  </servlet-mapping>
+
 </web-app>

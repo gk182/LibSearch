@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.UserDAO;
 
 import java.io.IOException;
@@ -48,6 +49,15 @@ public class UserController extends HttpServlet {
 				case "login":
 					Login(request, response);
 					break;
+				case "register":
+					Register(request, response);
+					break;
+				case "update":
+					update(request, response);
+					break;
+				case "delete":
+					delete(request, response);
+					break;
 				case "forgot-password":
 					ForgotPassword(request, response);
 					break;
@@ -61,6 +71,35 @@ public class UserController extends HttpServlet {
 		} else {
 			response.sendRedirect("Login.jsp"); // Redirect to login if action is null
 		}
+	}
+
+	private void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String username = request.getParameter("username");
+	    if (username != null) {
+	        if (UserDAO.deleteUser(username)) {
+	            request.setAttribute("successMessage", "User deleted successfully.");
+	            request.getRequestDispatcher("edit_staff.jsp").forward(request, response); 
+	        } else {
+	            request.setAttribute("errorMessage", "Failed to delete user.");
+	            request.getRequestDispatcher("edit_staff.jsp").forward(request, response); 
+	        }
+	    }
+		
+	}
+
+	private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String username = request.getParameter("username");
+	    String email = request.getParameter("email");
+	    String role = request.getParameter("role");
+
+	    if (UserDAO.updateUser(username, email, role)) {
+	        request.setAttribute("successMessage", "User updated successfully!");
+	        request.getRequestDispatcher("edit_staff.jsp").forward(request, response);  // Hiển thị thông báo thành công
+	    } else {
+	        request.setAttribute("errorMessage", "Failed to update user. Please try again.");
+	        request.getRequestDispatcher("edit_staff.jsp").forward(request, response);  // Hiển thị thông báo lỗi
+	    }
+		
 	}
 
 	private void ResetPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -105,7 +144,7 @@ public class UserController extends HttpServlet {
 	    if (UserDAO.login(username, pass)) { // Đăng nhập thành công
 	    	
 	        String role = UserDAO.getRoleByUsername(username); 
-	        
+
 	        request.getSession().setAttribute("username", username);
 	        request.getSession().setAttribute("role", role);
 
@@ -120,7 +159,19 @@ public class UserController extends HttpServlet {
 	        request.setAttribute("errorMessage", "Incorrect username or password!");
 	        request.getRequestDispatcher("Login.jsp").forward(request, response);
 	    }
-	    
 	}
-
+	private void Register(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String email = request.getParameter("email");
+		String pass = request.getParameter("password");
+		String role = request.getParameter("role");
+		if (UserDAO.checkUserExists(username)) {
+            request.setAttribute("errorMessage", "Username already exists. Please choose another one.");
+            request.getRequestDispatcher("edit_staff.jsp").forward(request, response);  
+        } else {
+        	UserDAO.register(username, email, pass,role);
+        	request.setAttribute("successMessage", "Registration successful!");
+        	request.getRequestDispatcher("edit_staff.jsp").forward(request, response);
+        }
+	}
 }
