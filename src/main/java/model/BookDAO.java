@@ -117,7 +117,7 @@ public class BookDAO {
         return books;
     }
 
-    public Book getBookById(int id) throws SQLException {
+    public model.Book getBookById(int id) throws SQLException {
         String sql = "SELECT * FROM books WHERE id = ?";
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
             stmt.setInt(1, id);
