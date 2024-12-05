@@ -85,14 +85,18 @@ public class BookDAO {
         }
     }
 
-    public List<Book> searchBooks(String query) throws SQLException {
-        String sql = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR category LIKE ?";
-        List<Book> books = new ArrayList<>();
+    public List<Book> searchBooks(String query, int page, int limit) throws SQLException {
+    	List<Book> books = new ArrayList<>();
+    	int offset = page * limit;
+    	String sql = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR category LIKE ? LIMIT ? OFFSET ?";
+        
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
             String searchQuery = "%" + query + "%"; // Thêm ký tự % để tìm kiếm
             stmt.setString(1, searchQuery);
             stmt.setString(2, searchQuery);
             stmt.setString(3, searchQuery);
+            stmt.setInt(4, limit);
+            stmt.setInt(5, offset);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Book book = new Book(
@@ -114,7 +118,9 @@ public class BookDAO {
                 }
             }
         }
+    	
         return books;
+    	
     }
 
     public Book getBookById(String id) throws SQLException {
@@ -180,6 +186,23 @@ public class BookDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        return total;
+    }
+
+    public int countBooksByQuery(String query) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM books WHERE title LIKE ? OR author LIKE ? OR category LIKE ?";
+        int total = 0;
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
+            String searchQuery = "%" + query + "%"; // Thêm ký tự % để tìm kiếm
+            stmt.setString(1, searchQuery);
+            stmt.setString(2, searchQuery);
+            stmt.setString(3, searchQuery);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
         }
         return total;
     }
