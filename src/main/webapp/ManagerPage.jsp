@@ -36,13 +36,18 @@
                     </a>
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
                         <li class="nav-item">
-                            <a href="books.jsp" class="nav-link align-middle px-0">
+                            <a href="BookManager.jsp" class="nav-link align-middle px-0">
                                 <i class="fs-4 bi-book"></i> <span class="ms-1 d-none d-sm-inline">Danh sách sách</span>
                             </a>
                         </li>
                         <li>
                             <a href="edit_staff.jsp" class="nav-link px-0 align-middle">
                                 <i class="fs-4 bi-person"></i> <span class="ms-1 d-none d-sm-inline">Quản Lý Account</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="ChangeLog.jsp" class="nav-link px-0 align-middle">
+                                <i class="fs-4 bi-history"></i> <span class="ms-1 d-none d-sm-inline">Lịch sử chỉnh sửa</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -63,19 +68,7 @@
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- JavaScript for Modal Interaction -->
-    <script>
-        function populateEditModal(id, title, author, category, quantity, price) {
-            document.getElementById("editBookId").value = id;
-            document.getElementById("editTitle").value = title;
-            document.getElementById("editAuthor").value = author;
-            // Populate other fields as needed
-        }
-
-        function setDeleteBookId(id) {
-            document.getElementById("deleteBookId").value = id;
-        }
-    </script>
+    
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         const links = document.querySelectorAll('.nav-link');
