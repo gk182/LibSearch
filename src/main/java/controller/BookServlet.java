@@ -25,19 +25,15 @@ public class BookServlet extends HttpServlet {
 	 */
 	public BookServlet() {
 		super();
+		bookDAO = new BookDAO();
 		// TODO Auto-generated constructor stub
 	}
 
 	public void init() throws ServletException {
 		super.init();
-		bookDAO = new BookDAO();
-		try {
-			List<Book> books = bookDAO.getAllBooks();
-			getServletContext().setAttribute("books", books);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new ServletException("Error initializing books", e);
-		}
+//		bookDAO = new BookDAO();
+//		List<Book> books = bookDAO.getBooks(0, 10);
+//		getServletContext().setAttribute("books", books);
 	}
 
 	/**
@@ -45,21 +41,47 @@ public class BookServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<Book> books;
-		String query = request.getParameter("query");
-		try {
-			if (query != null && !query.isEmpty()) {
-				 books = new BookDAO().searchBooks(query);
-			} else {
-				books = (List<Book>) getServletContext().getAttribute("books");
+	    String query = request.getParameter("query"); // Lấy từ khóa tìm kiếm
+	    String pageParam = request.getParameter("currentPage");
+	    int currentPage = (pageParam != null) ? Integer.parseInt(pageParam) : 0;
+	    int booksPerPage = 10;
+
+	    BookDAO bookDAO = new BookDAO();
+	    List<Book> books = null;
+	    int totalBooks = 0;
+
+	    if (query != null && !query.isEmpty()) {
+	        // Nếu có từ khóa tìm kiếm
+	        try {
+				books = bookDAO.searchBooks(query, currentPage, booksPerPage);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+	        try {
+				totalBooks = bookDAO.countBooksByQuery(query);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			request.setAttribute("books", books);
-			request.getRequestDispatcher("/index.jsp").forward(request, response);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error retrieving books");
-		}
+	    } else {
+	        // Nếu không tìm kiếm
+	        books = bookDAO.getBooks(currentPage, booksPerPage);
+	        totalBooks = bookDAO.countBooks();
+	    }
+
+	    int numPages = (int) Math.ceil((double) totalBooks / booksPerPage);
+
+	    // Đặt dữ liệu vào request
+	    request.setAttribute("books", books);
+	    request.setAttribute("currentPage", currentPage);
+	    request.setAttribute("numPages", numPages);
+	    request.setAttribute("query", query);
+
+	    // Forward tới JSP
+	    request.getRequestDispatcher("/index.jsp").forward(request, response);
 	}
+
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

@@ -3,7 +3,7 @@ package model;
 import java.sql.Timestamp;
 
 public class Book {
-    private int id;
+    private String id;
     private String title;
     private String author;
     private String category;
@@ -20,7 +20,7 @@ public class Book {
     // Constructors
     public Book() {}
 
-    public Book(int id, String title, String author, String category, int quantity, double price,
+    public Book(String id, String title, String author, String category, int quantity, double price,
                 Timestamp createdAt, Timestamp updatedAt, String publisher, int publishYear,
                 String description, String imageLink, int userId) {
         this.id = id;
@@ -39,11 +39,11 @@ public class Book {
     }
 
     // Getters and Setters
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -5,51 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Staff Dashboard</h1>
-        <a href="Logout.jsp" class="logout">Logout</a>
-    </header>
-
-    <main>
-        <!-- Book Management Section -->
-        <section id="book-management">
-            <h2>Book Management</h2>
-            <a href="addBook.jsp">Add New Book</a>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Category</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="book" items="${books}">
-                        <tr>
-                            <td>${book.title}</td>
-                            <td>${book.author}</td>
-                            <td>${book.category}</td>
-                            <td>${book.quantity}</td>
-                            <td>$${book.price}</td>
-                            <td>
-                                <a href="editBook.jsp?id=${book.id}">Edit</a> |
-                                <a href="deleteBook?id=${book.id}" onclick="return confirm('Are you sure?')">Delete</a>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 Bookstore Staff Dashboard</p>
-    </footer>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <jsp:include page="sidebarstaff.jsp"/>
+        <!-- Main Content -->
+        <div class="col py-3">
+            <h3>Welcome, Manager!</h3>
+            <p>Use the sidebar to navigate through the dashboard options.</p>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

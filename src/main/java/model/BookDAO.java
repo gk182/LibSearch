@@ -22,7 +22,7 @@ public class BookDAO {
         try (Statement stmt = DBConnection.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 Book book = new Book(
-                    rs.getInt("id"),
+                    rs.getString("id"),
                     rs.getString("title"),
                     rs.getString("author"),
                     rs.getString("category"),
@@ -72,7 +72,7 @@ public class BookDAO {
             stmt.setString(8, book.getDescription());
             stmt.setString(9, book.getImageLink());
             stmt.setInt(10, book.getUserId());
-            stmt.setInt(11, book.getId());
+            stmt.setString(11, book.getId());
             stmt.executeUpdate();
         }
     }
@@ -85,18 +85,22 @@ public class BookDAO {
         }
     }
 
-    public List<Book> searchBooks(String query) throws SQLException {
-        String sql = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR category LIKE ?";
-        List<Book> books = new ArrayList<>();
+    public List<Book> searchBooks(String query, int page, int limit) throws SQLException {
+    	List<Book> books = new ArrayList<>();
+    	int offset = page * limit;
+    	String sql = "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR category LIKE ? LIMIT ? OFFSET ?";
+        
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
             String searchQuery = "%" + query + "%"; // Thêm ký tự % để tìm kiếm
             stmt.setString(1, searchQuery);
             stmt.setString(2, searchQuery);
             stmt.setString(3, searchQuery);
+            stmt.setInt(4, limit);
+            stmt.setInt(5, offset);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Book book = new Book(
-                        rs.getInt("id"),
+                        rs.getString("id"),
                         rs.getString("title"),
                         rs.getString("author"),
                         rs.getString("category"),
@@ -114,17 +118,19 @@ public class BookDAO {
                 }
             }
         }
+    	
         return books;
+    	
     }
 
-    public model.Book getBookById(int id) throws SQLException {
+    public Book getBookById(String id) throws SQLException {
         String sql = "SELECT * FROM books WHERE id = ?";
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            stmt.setString(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return new Book(
-                        rs.getInt("id"),
+                        rs.getString("id"),
                         rs.getString("title"),
                         rs.getString("author"),
                         rs.getString("category"),
@@ -142,5 +148,62 @@ public class BookDAO {
             }
         }
         return null;
+    }
+    public List<Book> getBooks(int page, int pageSize) {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM books LIMIT ? OFFSET ?";
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, pageSize);
+            stmt.setInt(2, page * pageSize);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Book book = new Book();
+                book.setId(rs.getString("id"));
+                book.setTitle(rs.getString("title"));
+                book.setAuthor(rs.getString("author"));
+                book.setCategory(rs.getString("category"));
+                book.setImageLink(rs.getString("image_link"));
+                book.setQuantity(rs.getInt("quantity"));
+                book.setPrice(rs.getDouble("price"));
+                book.setPublisher(rs.getString("publisher"));
+                book.setPublishYear(rs.getInt("publish_year"));
+                book.setDescription(rs.getString("description"));
+                books.add(book);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Error: " + e.getMessage());
+        }
+        return books;
+    }
+
+    public int countBooks() {
+        int total = 0;
+        String sql = "SELECT COUNT(*) FROM books";
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                total = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+
+    public int countBooksByQuery(String query) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM books WHERE title LIKE ? OR author LIKE ? OR category LIKE ?";
+        int total = 0;
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
+            String searchQuery = "%" + query + "%"; // Thêm ký tự % để tìm kiếm
+            stmt.setString(1, searchQuery);
+            stmt.setString(2, searchQuery);
+            stmt.setString(3, searchQuery);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        }
+        return total;
     }
 }

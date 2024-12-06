@@ -4,26 +4,26 @@ import java.sql.Timestamp;
 
 public class BookHistory {
     private int id;
-    private int bookId;
+    private String bookId;
     private String action;
     private String fieldName;
     private String oldValue;
     private String newValue;
-    private int userId;
+    private String username;
     private Timestamp timestamp;
 
     // Constructors
     public BookHistory() {}
 
-    public BookHistory(int id, int bookId, String action, String fieldName, String oldValue,
-                       String newValue, int userId, Timestamp timestamp) {
+    public BookHistory(int id, String bookId, String action, String fieldName, String oldValue,
+                       String newValue, String username, Timestamp timestamp) {
         this.id = id;
         this.bookId = bookId;
         this.action = action;
         this.fieldName = fieldName;
         this.oldValue = oldValue;
         this.newValue = newValue;
-        this.userId = userId;
+        this.username = username;
         this.timestamp = timestamp;
     }
 
@@ -36,11 +36,11 @@ public class BookHistory {
         this.id = id;
     }
 
-    public int getBookId() {
+    public String getBookId() {
         return bookId;
     }
 
-    public void setBookId(int bookId) {
+    public void setBookId(String bookId) {
         this.bookId = bookId;
     }
 
@@ -76,12 +76,12 @@ public class BookHistory {
         this.newValue = newValue;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getUserName() {
+        return username;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     public Timestamp getTimestamp() {

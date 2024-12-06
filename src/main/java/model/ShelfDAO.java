@@ -4,17 +4,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShelfDAO {
-    private Connection connection;
+import util.DBConnection;
 
-    public ShelfDAO(Connection connection) {
-        this.connection = connection;
-    }
+public class ShelfDAO {
+
+    public ShelfDAO() {
+	}
 
     public List<Shelf> getAllShelves() throws SQLException {
         String query = "SELECT * FROM shelves";
         List<Shelf> shelves = new ArrayList<>();
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = DBConnection.getConnection().createStatement(); ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
                 Shelf shelf = new Shelf(
                     rs.getInt("id"),
@@ -25,10 +25,31 @@ public class ShelfDAO {
         }
         return shelves;
     }
+    
+    public Shelf getShelfByBookId(String bookId) throws SQLException {
+        String query = "SELECT s.id, s.shelf_name " +
+                       "FROM shelves s " +
+                       "JOIN book_shelves bs ON s.id = bs.shelf_id " +
+                       "WHERE bs.book_id = ?";
+        Shelf shelf = null;
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query)) {
+            stmt.setString(1, bookId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    shelf = new Shelf(
+                        rs.getInt("id"),
+                        rs.getString("shelf_name")
+                    );
+                }
+            }
+        }
+        return shelf;
+    }
+
 
     public void addShelf(Shelf shelf) throws SQLException {
         String query = "INSERT INTO shelves (shelf_name) VALUES (?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query)) {
             stmt.setString(1, shelf.getShelfName());
             stmt.executeUpdate();
         }
@@ -36,7 +57,7 @@ public class ShelfDAO {
 
     public void deleteShelf(int shelfId) throws SQLException {
         String query = "DELETE FROM shelves WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query)) {
             stmt.setInt(1, shelfId);
             stmt.executeUpdate();
         }
