@@ -67,7 +67,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="role" class="form-label">Role</label>
-                                    <select class="form-select" id="role" name="role">
+                                    <select  class="form-select" id="role" name="role">
                                         <option value="staff">Staff</option>
                                         <option value="manager">Manager</option>
                                     </select>

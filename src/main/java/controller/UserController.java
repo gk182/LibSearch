@@ -75,6 +75,7 @@ public class UserController extends HttpServlet {
 
 	private void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
+
 	    if (username != null) {
 	        if (UserDAO.deleteUser(username)) {
 	            request.setAttribute("successMessage", "User deleted successfully.");

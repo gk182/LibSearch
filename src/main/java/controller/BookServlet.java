@@ -15,26 +15,19 @@ import model.BookDAO;
 /**
  * Servlet implementation class BookServlet
  */
-@WebServlet(urlPatterns = "/api/searchBooks", loadOnStartup = 1)
+@WebServlet("/books")
 public class BookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private BookDAO bookDAO;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	public BookServlet() {
 		super();
-		bookDAO = new BookDAO();
 		// TODO Auto-generated constructor stub
 	}
 
-	public void init() throws ServletException {
-		super.init();
-//		bookDAO = new BookDAO();
-//		List<Book> books = bookDAO.getBooks(0, 10);
-//		getServletContext().setAttribute("books", books);
-	}
+
 
 	/**
 	 * @throws ServletException 
@@ -80,8 +73,9 @@ public class BookServlet extends HttpServlet {
 
 	    // Forward tới JSP
 	    request.getRequestDispatcher("/index.jsp").forward(request, response);
-	}
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -89,6 +83,70 @@ public class BookServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+		String action = request.getParameter("action");
+		System.out.print(action);
+		if(action != null){
+			switch (action){
+				case "update":
+					update(request, response);
+					break;
+				case "delete":
+					delete(request, response);
+					break;
+				default:
+					response.sendRedirect("BookManager.jsp"); // Redirect to login if action is unknown
+					break;
+			}
+		}else{
+			response.sendRedirect("BookManager.jsp"); // Redirect to login if action is null
+
+		}
 	}
+
+
+
+
+	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		String id = request.getParameter("id");
+		BookDAO BookDao = new BookDAO();
+		if(id != null){
+			if(BookDao.deleteBook(id)){
+				request.setAttribute("successMessage", "Book deleted successfully.");
+				request.getRequestDispatcher("BookManager.jsp").forward(request, response);
+			}else{
+				request.setAttribute("errorMessage", "Failed to delete book.");
+				request.getRequestDispatcher("BookManager.jsp").forward(request, response);
+			}
+		}
+	}
+
+	private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String id = request.getParameter("id");
+		String title = request.getParameter("title");
+		String author = request.getParameter("author");
+		String category = request.getParameter("category");
+		int quantity = Integer.parseInt(request.getParameter("quantity"));
+		double price = Double.parseDouble(request.getParameter("price"));
+		String description = request.getParameter("description");
+		BookDAO BookDao = new BookDAO();
+
+
+		Book book = new Book(id, title, author, category, quantity, price, description);
+        try {
+            if (BookDao.updateBook(book)) {
+                request.setAttribute("successMessage", "Book updated successfully!");
+                request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo thành công
+            } else {
+                request.setAttribute("errorMessage", "Failed to update Book. Please try again.");
+                request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo lỗi
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
+
 
 }

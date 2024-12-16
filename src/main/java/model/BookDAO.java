@@ -1,9 +1,6 @@
 package model;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,30 +56,40 @@ public class BookDAO {
         }
     }
 
-    public void updateBook(Book book) throws SQLException {
-        String query = "UPDATE books SET title = ?, author = ?, category = ?, quantity = ?, price = ?, publisher = ?, publish_year = ?, description = ?, image_link = ?, user_id = ? WHERE id = ?";
-        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query)) {
-            stmt.setString(1, book.getTitle());
-            stmt.setString(2, book.getAuthor());
-            stmt.setString(3, book.getCategory());
-            stmt.setInt(4, book.getQuantity());
-            stmt.setDouble(5, book.getPrice());
-            stmt.setString(6, book.getPublisher());
-            stmt.setInt(7, book.getPublishYear());
-            stmt.setString(8, book.getDescription());
-            stmt.setString(9, book.getImageLink());
-            stmt.setInt(10, book.getUserId());
-            stmt.setString(11, book.getId());
-            stmt.executeUpdate();
+    public boolean updateBook(Book book) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+
+            String query = "UPDATE books SET title = ?, author = ?, category = ?, quantity = ?, price = ?, description = ? WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, book.getTitle());
+                stmt.setString(2, book.getAuthor());
+                stmt.setString(3, book.getCategory());
+                stmt.setInt(4, book.getQuantity());
+                stmt.setDouble(5, book.getPrice());
+                stmt.setString(8, book.getDescription());
+                stmt.setString(11, book.getId());
+                int rowsUpdated = stmt.executeUpdate();
+                return rowsUpdated > 0;
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
         }
     }
 
-    public void deleteBook(int bookId) throws SQLException {
-        String query = "DELETE FROM books WHERE id = ?";
-        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query)) {
-            stmt.setInt(1, bookId);
-            stmt.executeUpdate();
+    public  boolean deleteBook(String id)  {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "DELETE FROM books WHERE id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, id);
+                int rowsDeleted = stmt.executeUpdate();
+                return rowsDeleted > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     public List<Book> searchBooks(String query, int page, int limit) throws SQLException {
@@ -123,13 +130,14 @@ public class BookDAO {
     	
     }
 
-    public Book getBookById(String id) throws SQLException {
+    public Book getBookById(String id)  {
+       Book book =null;
         String sql = "SELECT * FROM books WHERE id = ?";
         try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(sql)) {
             stmt.setString(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Book(
+                   book = new Book(
                         rs.getString("id"),
                         rs.getString("title"),
                         rs.getString("author"),
@@ -146,8 +154,11 @@ public class BookDAO {
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return null;
+        return book;
+
     }
     public List<Book> getBooks(int page, int pageSize) {
         List<Book> books = new ArrayList<>();

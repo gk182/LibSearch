@@ -8,27 +8,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookstore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header class="bg-primary text-white p-3">
-        <h1>Welcome to Our Bookstore</h1>
-        <p><a href="/LibSearch/Login.jsp" class="text-white">Login for staff?</a></p>
-    </header>
-
-    <main class="container my-4">
-        <section id="book-search">
-            <h2>Search for Books</h2>
-            <form action="/LibSearch/api/searchBooks" method="get" class="d-flex mb-4">
-                <input type="text" name="query" class="form-control me-2" 
-                       value="<%= request.getParameter("query") != null ? request.getParameter("query") : "" %>" 
+<div class="bg-white p-4 flex justify-between items-center w-full h-full text-black">
+    <div class="flex items-center w-30 cursor-pointer hover:opacity-70">
+        <img src="./assets/losdac.png" alt="logo" class="w-10 h-10">
+        <h1 class="ml-2 text-lg font-medium">Book Store</h1>
+    </div>
+    <div class="flex justify-around w-5/6">
+        <div class="w-2/3">
+            <form action="/LibSearch_war_exploded/books" method="get" class="flex items-center relative w-full">
+                <input type="text" name="query" class="form-control me-2"
+                       value="<%= request.getParameter("query") != null ? request.getParameter("query") : "" %>"
                        placeholder="Enter book title, author, or category">
                 <button type="submit" class="btn btn-primary">Search</button>
             </form>
+        </div>
+        <div class="flex items-center">
+            <div class="mr-6 mt-2 text-lg cursor-pointer hover:opacity-70">
+                <a  href="/LibSearch_war_exploded/Login.jsp">
+                    <div class="flex flex-col items-center">
 
+                        <i class="fa-regular fa-user"></i>
+                        <span class="text-xs">Login for staff</span>
+                    </div>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="border-t border-black my-4"></div>
+
+
+<main class="container my-4">
+        <section id="book-search">
             <!-- Display search results -->
             <div id="search-results">
-                <h3>All Books:</h3>
+
                 <ul class="list-unstyled">
                     <% 
                         BookDAO bookDAO = new BookDAO();
@@ -55,7 +76,7 @@
                             for (Book book : books) {
                     %>
                                 <li class="mb-3">
-                                    <a href="/LibSearch/bookDetails.jsp?bookId=<%= book.getId() %>" class="d-flex align-items-center text-decoration-none">
+                                    <a href="/LibSearch_war_exploded/bookDetails.jsp?id=<%= book.getId() %>" class="d-flex align-items-center text-decoration-none">
                                         <img src="<%= book.getImageLink() %>" alt="<%= book.getTitle() %>" class="me-3" style="width:100px;height:auto;">
                                         <div>
                                             <strong><%= book.getTitle() %></strong>

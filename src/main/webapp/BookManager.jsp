@@ -111,8 +111,8 @@
                     <td><%= book.getAuthor() %></td>
                     <td><%= book.getCategory() %></td>
                     <td>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData('<%= book.getId() %>', '<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getPublisher() %>', '<%= book.getPublishYear() %>', '<%= book.getDescription().replace("'", "&#39;").replace("\"", "&quot;") %>')">Edit</button>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" data-book-id="<%= book.getId() %>">Delete</button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getId() %>','<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getDescription().replace("'", "&#39;").replace("\"", "&quot;") %>')">Edit</button>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" onclick="deleteBook('<%= book.getId() %>')">Delete</button>
                     </td>
                 </tr>
             <% } %>
@@ -136,33 +136,14 @@
         </ul>
     </nav>
 
-    <!-- Add Book Modal -->
-    <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addBookModalLabel">Add New Book</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addBookForm">
-                        <!-- Add Book Form Content -->
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="submitAddForm()">Add Book</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Delete Book Modal -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                    <h5 class="modal-title" >Confirm Delete</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -170,23 +151,28 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" onclick="deleteBook()">Delete</button>
+
+                    <form id="deleteForm" action="books" method="post" style="display: inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" id="idToDelete" value="">
+                    <button type="button" class="btn btn-danger" >Delete</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Edit Book Modal -->
-    <div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editBookModal" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editBookModalLabel">Edit Book</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="editBookForm">
-                        <input type="hidden" id="editId" name="id">
+                <div  class="modal-body">
+                    <form  action="books" method="post" id="editBookForm">
+                        <input type="hidden" name="action" value="update">
                         <div class="mb-3">
                             <label for="editTitle" class="form-label">Title</label>
                             <input type="text" class="form-control" id="editTitle" name="title">
@@ -208,14 +194,6 @@
                             <input type="text" class="form-control" id="editPrice" name="price">
                         </div>
                         <div class="mb-3">
-                            <label for="editPublisher" class="form-label">Publisher</label>
-                            <input type="text" class="form-control" id="editPublisher" name="publisher">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editPublishYear" class="form-label">Publish Year</label>
-                            <input type="number" class="form-control" id="editPublishYear" name="publishYear">
-                        </div>
-                        <div class="mb-3">
                             <label for="editDescription" class="form-label">Description</label>
                             <textarea class="form-control" id="editDescription" name="description"></textarea>
                         </div>
@@ -223,7 +201,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">Save changes</button>
+                    <button type="submit" class="btn btn-primary" >Save changes</button>
                 </div>
             </div>
         </div>
@@ -236,29 +214,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
-        function setEditFormData(id, title, author, category, quantity, price, publisher, publishYear, description) {
+        function setEditFormData(id, title, author, category, quantity, price) {
             document.getElementById("editId").value = id;
             document.getElementById("editTitle").value = title;
             document.getElementById("editAuthor").value = author;
             document.getElementById("editCategory").value = category;
             document.getElementById("editQuantity").value = quantity;
             document.getElementById("editPrice").value = price;
-            document.getElementById("editPublisher").value = publisher;
-            document.getElementById("editPublishYear").value = publishYear;
-            document.getElementById("editDescription").value = description;
+
         }
 
-        function submitEditForm() {
-            // Submit logic for editing book
-        }
+        function deleteBook(id) {
+            console.log("hahaha")
 
-        function deleteBook() {
+            document.getElementById("idToDelete").value = id;
             // Delete book logic
         }
 
-        function submitAddForm() {
-            // Submit logic for adding new book
-        }
+
     </script>
 
 </body>

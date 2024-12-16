@@ -26,7 +26,7 @@ public class ShelfDAO {
         return shelves;
     }
     
-    public Shelf getShelfByBookId(String bookId) throws SQLException {
+    public Shelf getShelfByBookId(String bookId)  {
         String query = "SELECT s.id, s.shelf_name " +
                        "FROM shelves s " +
                        "JOIN book_shelves bs ON s.id = bs.shelf_id " +
@@ -42,6 +42,8 @@ public class ShelfDAO {
                     );
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return shelf;
     }

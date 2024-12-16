@@ -14,7 +14,7 @@
     <description></description>
     <display-name>BookHistory</display-name>
     <servlet-name>BookHistory</servlet-name>
-    <servlet-class>controller.BookHistory</servlet-class>
+    <servlet-class>controller.BookHistoryServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>BookHistory</servlet-name>

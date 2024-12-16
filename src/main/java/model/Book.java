@@ -38,6 +38,9 @@ public class Book {
         this.userId = userId;
     }
 
+    public Book(String id, String title, String author, String category, int quantity, double price,  String description) {
+    }
+
     // Getters and Setters
     public String getId() {
         return id;
