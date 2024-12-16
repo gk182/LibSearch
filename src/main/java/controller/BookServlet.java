@@ -72,7 +72,7 @@ public class BookServlet extends HttpServlet {
 	    request.setAttribute("query", query);
 
 	    // Forward tới JSP
-	    request.getRequestDispatcher("/index.jsp").forward(request, response);
+	    request.getRequestDispatcher("/BookManager.jsp").forward(request, response);
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 
 	}
@@ -94,11 +94,11 @@ public class BookServlet extends HttpServlet {
 					delete(request, response);
 					break;
 				default:
-					response.sendRedirect("BookManager.jsp"); // Redirect to login if action is unknown
+					response.sendRedirect("/BookManager"); // Redirect to login if action is unknown
 					break;
 			}
 		}else{
-			response.sendRedirect("BookManager.jsp"); // Redirect to login if action is null
+			response.sendRedirect("/BookManager.jsp"); // Redirect to login if action is null
 
 		}
 	}

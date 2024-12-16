@@ -66,8 +66,8 @@ public class BookDAO {
                 stmt.setString(3, book.getCategory());
                 stmt.setInt(4, book.getQuantity());
                 stmt.setDouble(5, book.getPrice());
-                stmt.setString(8, book.getDescription());
-                stmt.setString(11, book.getId());
+                stmt.setString(6, book.getDescription());
+                stmt.setString(7, book.getId());
                 int rowsUpdated = stmt.executeUpdate();
                 return rowsUpdated > 0;
             }
@@ -78,8 +78,16 @@ public class BookDAO {
         }
     }
 
-    public  boolean deleteBook(String id)  {
+    public boolean deleteBook(String id) {
         try (Connection conn = DBConnection.getConnection()) {
+            // Bước 1: Xóa các bản ghi trong book_shelves
+            String deleteShelvesSql = "DELETE FROM book_shelves WHERE book_id = ?";
+            try (PreparedStatement deleteShelvesStmt = conn.prepareStatement(deleteShelvesSql)) {
+                deleteShelvesStmt.setString(1, id);
+                deleteShelvesStmt.executeUpdate();
+            }
+
+            // Bước 2: Xóa bản ghi trong books
             String sql = "DELETE FROM books WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, id);

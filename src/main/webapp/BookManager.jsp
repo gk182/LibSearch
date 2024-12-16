@@ -72,6 +72,30 @@
         <button type="submit" class="btn btn-outline-secondary ms-2">Search</button>
     </form>
 
+
+            <%
+                String successMessage = (String) request.getAttribute("successMessage");
+                if (successMessage != null) {
+            %>
+            <div class="alert alert-success">
+                <%= successMessage %>
+            </div>
+            <%
+                }
+            %>
+
+            <!-- Hiển thị thông báo lỗi nếu có -->
+            <%
+                String errorMessage = (String) request.getAttribute("errorMessage");
+                if (errorMessage != null) {
+            %>
+            <div class="alert alert-danger">
+                <%= errorMessage %>
+            </div>
+            <%
+                }
+            %>
+
     <%
         String searchQuery = request.getParameter("search");
         if (searchQuery == null) {
@@ -90,6 +114,7 @@
         int totalBooks = bookDAO.countBooksByQuery(searchQuery); // Use search query to count books
         int numPages = (int) Math.ceil((double) totalBooks / pageSize);
     %>
+
 
     <table class="table">
         <thead>
@@ -112,7 +137,7 @@
                     <td><%= book.getCategory() %></td>
                     <td>
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getId() %>','<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getDescription().replace("'", "&#39;").replace("\"", "&quot;") %>')">Edit</button>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" onclick="deleteBook('<%= book.getId() %>')">Delete</button>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" onclick="deleteBook('<%= book.getId() %>')" >Delete</button>
                     </td>
                 </tr>
             <% } %>
@@ -154,8 +179,8 @@
 
                     <form id="deleteForm" action="books" method="post" style="display: inline;">
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="id" id="idToDelete" value="">
-                    <button type="button" class="btn btn-danger" >Delete</button>
+                        <input type="hidden" name="id" id="idToDelete" required>
+                    <button type="submit" class="btn btn-danger" >Delete</button>
                     </form>
                 </div>
             </div>
@@ -173,29 +198,31 @@
                 <div  class="modal-body">
                     <form  action="books" method="post" id="editBookForm">
                         <input type="hidden" name="action" value="update">
+                        <input type="hidden" id="editId" name="id" required>
+
                         <div class="mb-3">
                             <label for="editTitle" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="editTitle" name="title">
+                            <input type="text" class="form-control" id="editTitle" name="title" required>
                         </div>
                         <div class="mb-3">
                             <label for="editAuthor" class="form-label">Author</label>
-                            <input type="text" class="form-control" id="editAuthor" name="author">
+                            <input type="text" class="form-control" id="editAuthor" name="author" required>
                         </div>
                         <div class="mb-3">
                             <label for="editCategory" class="form-label">Category</label>
-                            <input type="text" class="form-control" id="editCategory" name="category">
+                            <input type="text" class="form-control" id="editCategory" name="category" required>
                         </div>
                         <div class="mb-3">
                             <label for="editQuantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="editQuantity" name="quantity">
+                            <input type="number" class="form-control" id="editQuantity" name="quantity" required>
                         </div>
                         <div class="mb-3">
                             <label for="editPrice" class="form-label">Price</label>
-                            <input type="text" class="form-control" id="editPrice" name="price">
+                            <input type="text" class="form-control" id="editPrice" name="price" required>
                         </div>
                         <div class="mb-3">
                             <label for="editDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="editDescription" name="description"></textarea>
+                            <textarea class="form-control" id="editDescription" name="description" required></textarea>
                         </div>
                     </form>
                 </div>
@@ -214,19 +241,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
-        function setEditFormData(id, title, author, category, quantity, price) {
-            document.getElementById("editId").value = id;
+        function setEditFormData(id, title, author, category, quantity, price,description) {
             document.getElementById("editTitle").value = title;
             document.getElementById("editAuthor").value = author;
             document.getElementById("editCategory").value = category;
             document.getElementById("editQuantity").value = quantity;
             document.getElementById("editPrice").value = price;
-
+            document.getElementById("editDescription").value = description; // Cập nhật mô tả
         }
 
         function deleteBook(id) {
-            console.log("hahaha")
-
+            console.log(id)
             document.getElementById("idToDelete").value = id;
             // Delete book logic
         }
