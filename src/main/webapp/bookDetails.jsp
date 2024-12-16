@@ -81,11 +81,13 @@
         </div>
 
     </div>
-
-      <div class="mt-[30px]">
-          <h3 class="text-[20px] font-bold">Description</h3>
-          <p class="mx-[20px]"> <%= book.getDescription() %></p>
-      </div>
+    <div class="mt-[30px]">
+    <h3 class="text-[20px] font-bold">Description</h3>
+    <p class="mx-[20px]" id="description">
+        <%= book.getDescription() %>
+    </p>
+    <button id="toggleButton" class="mt-[10px] bg-blue-500 text-white px-[10px] py-[5px] rounded" onclick="toggleDescription()">Đọc thêm</button>
+    </div>
 
 
 
@@ -98,5 +100,31 @@
     <%
         }
     %>
+    <script>
+        function toggleDescription() {
+            var description = document.getElementById("description");
+            var button = document.getElementById("toggleButton");
+
+            if (description.style.maxHeight && description.style.maxHeight !== "100px") {
+                description.style.maxHeight = "100px"; // Thiết lập lại chiều cao ban đầu
+                button.innerText = "Đọc thêm";
+            } else {
+                description.style.maxHeight = description.scrollHeight + "px"; // Mở rộng để hiển thị toàn bộ
+                button.innerText = "Ẩn bớt";
+            }
+        }
+
+        // Thiết lập ban đầu để giới hạn chiều cao của đoạn văn bản
+        window.onload = function() {
+            var description = document.getElementById("description");
+            if (description.scrollHeight > 100) { // Giới hạn chiều cao ban đầu (100px)
+                description.style.maxHeight = "100px";
+                description.style.overflow = "hidden";
+                document.getElementById("toggleButton").style.display = "block";
+            } else {
+                document.getElementById("toggleButton").style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
