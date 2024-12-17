@@ -136,7 +136,7 @@
                     <td><%= book.getAuthor() %></td>
                     <td><%= book.getCategory() %></td>
                     <td>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getId() %>','<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getDescription().replace("'", "&#39;").replace("\"", "&quot;") %>')">Edit</button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getDescription() %>','<%= book.getId() %>')">Edit</button>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" onclick="deleteBook('<%= book.getId() %>')" >Delete</button>
                     </td>
                 </tr>
@@ -198,8 +198,7 @@
                 <div  class="modal-body">
                     <form  action="books" method="post" id="editBookForm">
                         <input type="hidden" name="action" value="update">
-                        <input type="hidden" id="editId" name="id" required>
-
+                        <input type="hidden" name="id" id="editId" required>
                         <div class="mb-3">
                             <label for="editTitle" class="form-label">Title</label>
                             <input type="text" class="form-control" id="editTitle" name="title" required>
@@ -224,12 +223,13 @@
                             <label for="editDescription" class="form-label">Description</label>
                             <textarea class="form-control" id="editDescription" name="description" required></textarea>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" >Save changes</button>
+                        </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" >Save changes</button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -241,13 +241,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
-        function setEditFormData(id, title, author, category, quantity, price,description) {
+        function setEditFormData( title, author, category, quantity, price,description,id) {
+            console.log("hahaha")
             document.getElementById("editTitle").value = title;
             document.getElementById("editAuthor").value = author;
             document.getElementById("editCategory").value = category;
             document.getElementById("editQuantity").value = quantity;
             document.getElementById("editPrice").value = price;
-            document.getElementById("editDescription").value = description; // Cập nhật mô tả
+            document.getElementById("editDescription").value = description;
+            document.getElementById("editId").value = id;
+// Cập nhật mô tả
         }
 
         function deleteBook(id) {

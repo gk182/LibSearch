@@ -72,7 +72,7 @@ public class BookServlet extends HttpServlet {
 	    request.setAttribute("query", query);
 
 	    // Forward tới JSP
-	    request.getRequestDispatcher("/BookManager.jsp").forward(request, response);
+	    request.getRequestDispatcher("BookManager.jsp").forward(request, response);
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 
 	}
@@ -94,11 +94,11 @@ public class BookServlet extends HttpServlet {
 					delete(request, response);
 					break;
 				default:
-					response.sendRedirect("/BookManager"); // Redirect to login if action is unknown
+					response.sendRedirect("BookManager"); // Redirect to login if action is unknown
 					break;
 			}
 		}else{
-			response.sendRedirect("/BookManager.jsp"); // Redirect to login if action is null
+			response.sendRedirect("BookManager.jsp"); // Redirect to login if action is null
 
 		}
 	}
@@ -130,10 +130,8 @@ public class BookServlet extends HttpServlet {
 		String description = request.getParameter("description");
 		BookDAO BookDao = new BookDAO();
 
-
-		Book book = new Book(id, title, author, category, quantity, price, description);
         try {
-            if (BookDao.updateBook(book)) {
+            if (BookDao.updateBook(title,author,category,quantity,price,description,id)) {
                 request.setAttribute("successMessage", "Book updated successfully!");
                 request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo thành công
             } else {

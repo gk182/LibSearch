@@ -39,35 +39,19 @@ public class BookDAO {
         return books;
     }
 
-    public void addBook(Book book) throws SQLException {
-        String query = "INSERT INTO books (title, author, category, quantity, price, publisher, publish_year, description, image_link, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = DBConnection.getConnection().prepareStatement(query)) {
-            stmt.setString(1, book.getTitle());
-            stmt.setString(2, book.getAuthor());
-            stmt.setString(3, book.getCategory());
-            stmt.setInt(4, book.getQuantity());
-            stmt.setDouble(5, book.getPrice());
-            stmt.setString(6, book.getPublisher());
-            stmt.setInt(7, book.getPublishYear());
-            stmt.setString(8, book.getDescription());
-            stmt.setString(9, book.getImageLink());
-            stmt.setInt(10, book.getUserId());
-            stmt.executeUpdate();
-        }
-    }
 
-    public boolean updateBook(Book book) throws SQLException {
+    public boolean updateBook(String title, String author,String category, int quantity, double price,String description,String id ) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
 
             String query = "UPDATE books SET title = ?, author = ?, category = ?, quantity = ?, price = ?, description = ? WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                stmt.setString(1, book.getTitle());
-                stmt.setString(2, book.getAuthor());
-                stmt.setString(3, book.getCategory());
-                stmt.setInt(4, book.getQuantity());
-                stmt.setDouble(5, book.getPrice());
-                stmt.setString(6, book.getDescription());
-                stmt.setString(7, book.getId());
+                stmt.setString(1, title);
+                stmt.setString(2, author);
+                stmt.setString(3, category);
+                stmt.setInt(4, quantity);
+                stmt.setDouble(5, price);
+                stmt.setString(6,description);
+                stmt.setString(7, id);
                 int rowsUpdated = stmt.executeUpdate();
                 return rowsUpdated > 0;
             }
