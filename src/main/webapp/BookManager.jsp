@@ -139,7 +139,7 @@
                     <td><%= book.getAuthor() %></td>
                     <td><%= book.getCategory() %></td>
                     <td>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getDescription() %>','<%= book.getId() %>')">Edit</button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', 'Mô tả Lorem','<%= book.getId() %>')">Edit</button>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" onclick="deleteBook('<%= book.getId() %>')" >Delete</button>
                     </td>
                 </tr>
