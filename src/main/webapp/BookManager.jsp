@@ -108,9 +108,12 @@
         if (pageStr != null) {
             pages = Integer.parseInt(pageStr);
         }
-
+        
         BookDAO bookDAO = new BookDAO();
-        List<Book> books = bookDAO.searchBooks(searchQuery, pages, pageSize);
+        List<Book> books = bookDAO.getAllBooks();
+		
+		books = bookDAO.searchBooks(searchQuery, pages, pageSize);
+		
         int totalBooks = bookDAO.countBooksByQuery(searchQuery); // Use search query to count books
         int numPages = (int) Math.ceil((double) totalBooks / pageSize);
     %>

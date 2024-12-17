@@ -64,6 +64,9 @@ public class BookDAO {
 
     public boolean deleteBook(String id) {
         try (Connection conn = DBConnection.getConnection()) {
+            // Bắt đầu giao dịch
+            conn.setAutoCommit(false);
+
             // Bước 1: Xóa các bản ghi trong book_shelves
             String deleteShelvesSql = "DELETE FROM book_shelves WHERE book_id = ?";
             try (PreparedStatement deleteShelvesStmt = conn.prepareStatement(deleteShelvesSql)) {
@@ -71,18 +74,34 @@ public class BookDAO {
                 deleteShelvesStmt.executeUpdate();
             }
 
-            // Bước 2: Xóa bản ghi trong books
-            String sql = "DELETE FROM books WHERE id = ?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, id);
-                int rowsDeleted = stmt.executeUpdate();
-                return rowsDeleted > 0;
+            // Bước 2: Xóa các bản ghi trong book_history
+            String deleteHistorySql = "DELETE FROM book_history WHERE book_id = ?";
+            try (PreparedStatement deleteHistoryStmt = conn.prepareStatement(deleteHistorySql)) {
+                deleteHistoryStmt.setString(1, id);
+                deleteHistoryStmt.executeUpdate();
+            }
+
+            // Bước 3: Xóa bản ghi trong books
+            String deleteBookSql = "DELETE FROM books WHERE id = ?";
+            try (PreparedStatement deleteBookStmt = conn.prepareStatement(deleteBookSql)) {
+                deleteBookStmt.setString(1, id);
+                int rowsDeleted = deleteBookStmt.executeUpdate();
+
+                // Xác nhận giao dịch nếu xóa thành công
+                if (rowsDeleted > 0) {
+                    conn.commit();
+                    return true;
+                } else {
+                    conn.rollback();
+                    return false;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 
     public List<Book> searchBooks(String query, int page, int limit) throws SQLException {
     	List<Book> books = new ArrayList<>();
