@@ -251,7 +251,8 @@
             document.getElementById("editCategory").value = category;
             document.getElementById("editQuantity").value = quantity;
             document.getElementById("editPrice").value = price;
-            document.getElementById("editDescription").value = description;
+            // Cần phải fix lại cái Description
+            document.getElementById("editDescription").value = decodeURIComponent(description);
             document.getElementById("editId").value = id;
 // Cập nhật mô tả
         }
