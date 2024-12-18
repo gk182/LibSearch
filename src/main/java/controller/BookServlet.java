@@ -82,7 +82,6 @@ public class BookServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
 		String action = request.getParameter("action");
 		System.out.print(action);
 		if(action != null){
@@ -108,14 +107,27 @@ public class BookServlet extends HttpServlet {
 
 	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		String id = request.getParameter("id");
-		BookDAO BookDao = new BookDAO();
+		List<Book> books = null;
+		BookDAO bookDao = new BookDAO();
 		if(id != null){
-			if(BookDao.deleteBook(id)){
+			if(bookDao.deleteBook(id)){
 				request.setAttribute("successMessage", "Book deleted successfully.");
+                try {
+                    books = bookDao.getAllBooks();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                request.setAttribute("books",books);
+				response.sendRedirect("BookManager.jsp");
 				request.getRequestDispatcher("BookManager.jsp").forward(request, response);
+				return;
+
 			}else{
 				request.setAttribute("errorMessage", "Failed to delete book.");
+				response.sendRedirect("BookManager.jsp");
+
 				request.getRequestDispatcher("BookManager.jsp").forward(request, response);
+				return;
 			}
 		}
 	}
@@ -134,9 +146,11 @@ public class BookServlet extends HttpServlet {
             if (BookDao.updateBook(title,author,category,quantity,price,description,id)) {
                 request.setAttribute("successMessage", "Book updated successfully!");
                 request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo thành công
+				return;
             } else {
                 request.setAttribute("errorMessage", "Failed to update Book. Please try again.");
                 request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo lỗi
+				return;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

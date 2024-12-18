@@ -67,7 +67,7 @@
             <h1>Book Management</h1>
 
     <!-- Search Form -->
-    <form method="get" class="d-flex mb-4" action="BookManager.jsp">
+    <form method="get" class="d-flex mb-4" action="books">
         <input type="text" class="form-control" name="search" placeholder="Search by Title, Author, or Category" value="<%= request.getParameter("search") != null ? request.getParameter("search") : "" %>">
         <button type="submit" class="btn btn-outline-secondary ms-2">Search</button>
     </form>
@@ -108,9 +108,9 @@
         if (pageStr != null) {
             pages = Integer.parseInt(pageStr);
         }
+       BookDAO bookDAO = new BookDAO();
+        List<Book> books = bookDAO.getAllBooks();
 
-        BookDAO bookDAO = new BookDAO();
-        List<Book> books = bookDAO.searchBooks(searchQuery, pages, pageSize);
         int totalBooks = bookDAO.countBooksByQuery(searchQuery); // Use search query to count books
         int numPages = (int) Math.ceil((double) totalBooks / pageSize);
     %>
@@ -197,8 +197,7 @@
                 </div>
                 <div  class="modal-body">
                     <form  action="books" method="post" id="editBookForm">
-                        <input type="hidden" name="action" value="update">
-                        <input type="hidden" name="id" id="editId" required>
+                        <input type="hidden" id="editId" name="action" value="update">
                         <div class="mb-3">
                             <label for="editTitle" class="form-label">Title</label>
                             <input type="text" class="form-control" id="editTitle" name="title" required>
