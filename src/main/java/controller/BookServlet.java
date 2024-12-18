@@ -82,6 +82,7 @@ public class BookServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		doGet(request, response);
 		String action = request.getParameter("action");
 		System.out.print(action);
 		if(action != null){
@@ -90,7 +91,12 @@ public class BookServlet extends HttpServlet {
 					update(request, response);
 					break;
 				case "delete":
+				try {
 					delete(request, response);
+				} catch (ServletException | IOException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 					break;
 				default:
 					response.sendRedirect("BookManager"); // Redirect to login if action is unknown
@@ -105,32 +111,31 @@ public class BookServlet extends HttpServlet {
 
 
 
-	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		String id = request.getParameter("id");
-		List<Book> books = null;
-		BookDAO bookDao = new BookDAO();
-		if(id != null){
-			if(bookDao.deleteBook(id)){
-				request.setAttribute("successMessage", "Book deleted successfully.");
-                try {
-                    books = bookDao.getAllBooks();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                request.setAttribute("books",books);
-				response.sendRedirect("BookManager.jsp");
-				request.getRequestDispatcher("BookManager.jsp").forward(request, response);
-				return;
+	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException{
+	    String id = request.getParameter("id");
+	    List<Book> books = null;
+	    BookDAO BookDao = new BookDAO();
 
-			}else{
-				request.setAttribute("errorMessage", "Failed to delete book.");
-				response.sendRedirect("BookManager.jsp");
+	    // Kiểm tra nếu id tồn tại
+	    if (id != null) {
+	        // Nếu xóa thành công
+	        if (BookDao.deleteBook(id)) {
+	            // Thêm thông báo thành công vào request
+	            request.setAttribute("successMessage", "Book deleted successfully.");
+	        } else {
+	            // Thêm thông báo lỗi vào request nếu không xóa được
+	            request.setAttribute("errorMessage", "Failed to delete book.");
+	        }
 
-				request.getRequestDispatcher("BookManager.jsp").forward(request, response);
-				return;
-			}
-		}
+	        // Lấy danh sách sách sau khi thao tác
+	        books = BookDao.getAllBooks();
+	        request.setAttribute("books", books);
+
+	        // Chuyển hướng đến trang BookManager.jsp
+	        request.getRequestDispatcher("BookManager.jsp").forward(request, response);
+	    }
 	}
+
 
 	private void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String id = request.getParameter("id");
@@ -146,11 +151,9 @@ public class BookServlet extends HttpServlet {
             if (BookDao.updateBook(title,author,category,quantity,price,description,id)) {
                 request.setAttribute("successMessage", "Book updated successfully!");
                 request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo thành công
-				return;
             } else {
                 request.setAttribute("errorMessage", "Failed to update Book. Please try again.");
                 request.getRequestDispatcher("BookManager.jsp").forward(request, response);  // Hiển thị thông báo lỗi
-				return;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
