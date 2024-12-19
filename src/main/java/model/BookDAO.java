@@ -41,20 +41,19 @@ public class BookDAO {
 
 
 
-    public boolean updateBook(String title, String author, String category, int quantity, double price, String description, String publisher, int publishYear,  String id, String updatedBy) throws SQLException {
+    public boolean updateBook(String title, String author, String category, int quantity, double price, String publisher, int publishYear,String updatedBy, String id ) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             // Cập nhật thông tin sách trong bảng books
-            String updateQuery = "UPDATE books SET title = ?, author = ?, category = ?, quantity = ?, price = ?, description = ?, publisher = ?, publish_year = ? WHERE id = ?";
+            String updateQuery = "UPDATE books SET title = ?, author = ?, category = ?, quantity = ?, price = ?, publisher = ?, publish_year = ? WHERE id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
                 stmt.setString(1, title);
                 stmt.setString(2, author);
                 stmt.setString(3, category);
                 stmt.setInt(4, quantity);
                 stmt.setDouble(5, price);
-                stmt.setString(6, description);
-                stmt.setString(7, publisher);
-                stmt.setInt(8, publishYear);
-                stmt.setString(9, id);
+                stmt.setString(6, publisher);
+                stmt.setInt(7, publishYear);
+                stmt.setString(8, id);
 
                 int rowsUpdated = stmt.executeUpdate();
                 // Nếu cập nhật sách thành công, thêm vào bảng book_history để lưu lịch sử
@@ -70,10 +69,8 @@ public class BookDAO {
                                 String oldCategory = rs.getString("category");
                                 int oldQuantity = rs.getInt("quantity");
                                 double oldPrice = rs.getDouble("price");
-                                String oldDescription = rs.getString("description");
                                 String oldPublisher = rs.getString("publisher");
                                 int oldPublishYear = rs.getInt("publish_year");
-                                String oldImageLink = rs.getString("image_link");
 
                                 // Ghi lại lịch sử thay đổi cho từng trường
                                 recordHistory(conn, id, "title", oldTitle, title, updatedBy);
@@ -81,7 +78,6 @@ public class BookDAO {
                                 recordHistory(conn, id, "category", oldCategory, category, updatedBy);
                                 recordHistory(conn, id, "quantity", String.valueOf(oldQuantity), String.valueOf(quantity), updatedBy);
                                 recordHistory(conn, id, "price", String.valueOf(oldPrice), String.valueOf(price), updatedBy);
-                                recordHistory(conn, id, "description", oldDescription, description, updatedBy);
                                 recordHistory(conn, id, "publisher", oldPublisher, publisher, updatedBy);
                                 recordHistory(conn, id, "publish_year", String.valueOf(oldPublishYear), String.valueOf(publishYear), updatedBy);
                             }
@@ -99,7 +95,7 @@ public class BookDAO {
 
 
     private void recordHistory(Connection conn, String bookId, String fieldName, String oldValue, String newValue, String updatedBy) throws SQLException {
-        String historyQuery = "INSERT INTO book_history (book_id, action, field_namebook_shelves, old_value, new_value, user_id) VALUES (?, 'update', ?, ?, ?, ?)";
+        String historyQuery = "INSERT INTO book_history (book_id, action, field_name, old_value, new_value, user_id) VALUES (?, 'update', ?, ?, ?, ?)";
         try (PreparedStatement historyStmt = conn.prepareStatement(historyQuery)) {
             historyStmt.setString(1, bookId);
             historyStmt.setString(2, fieldName);

@@ -112,6 +112,7 @@
                 BookDAO bookDAO = new BookDAO();
                 List<Book> books = bookDAO.getAllBooks();
 
+
                 books = bookDAO.searchBooks(searchQuery, pages, pageSize);
 
                 int totalBooks = bookDAO.countBooksByQuery(searchQuery); // Use search query to count books
@@ -139,7 +140,7 @@
                     <td><%= book.getAuthor() %></td>
                     <td><%= book.getCategory() %></td>
                     <td>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData( '<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', 'Mô tả Lorem','<%= book.getId() %>')">Edit</button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editBookModal" onclick="setEditFormData('<%= book.getTitle() %>', '<%= book.getAuthor() %>', '<%= book.getCategory() %>', '<%= book.getQuantity() %>', '<%= book.getPrice() %>', '<%= book.getPublisher() %>', '<%= book.getPublishYear() %>', 'admin', '<%= book.getId() %>')">Edit</button>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" onclick="deleteBook('<%= book.getId() %>')" >Delete</button>
                     </td>
                 </tr>
@@ -222,10 +223,20 @@
                                     <label for="editPrice" class="form-label">Price</label>
                                     <input type="text" class="form-control" id="editPrice" name="price" required>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="editDescription" class="form-label">Description</label>
-                                    <textarea class="form-control" id="editDescription" name="description" required></textarea>
+                                    <label for="editPublisher" class="form-label">Publisher</label>
+                                    <input type="text" class="form-control" id="editPublisher" name="publisher" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="editPublishYear" class="form-label">Publish Year</label>
+                                    <input type="number" class="form-control" id="editPublishYear" name="publishYear" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editUpdatedBy" class="form-label">Updated By</label>
+                                    <input type="text" class="form-control" id="editUpdatedBy" name="updatedBy" required>
+                                </div>
+
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary" >Save changes</button>
@@ -244,15 +255,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
 <script>
-    function setEditFormData( title, author, category, quantity, price,description,id) {
+    function setEditFormData( title, author, category, quantity, price,publisher,publishYear,updatedBy,id) {
         console.log("hahaha")
+
         document.getElementById("editTitle").value = title;
         document.getElementById("editAuthor").value = author;
         document.getElementById("editCategory").value = category;
         document.getElementById("editQuantity").value = quantity;
         document.getElementById("editPrice").value = price;
         // Cần phải fix lại cái Description
-        document.getElementById("editDescription").value = decodeURIComponent(description);
+        document.getElementById("editPublisher").value = publisher
+        document.getElementById("editPublishYear").value = publishYear
+        document.getElementById("editUpdatedBy").value = updatedBy
         document.getElementById("editId").value = id;
 // Cập nhật mô tả
     }

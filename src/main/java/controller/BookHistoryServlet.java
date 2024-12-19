@@ -19,8 +19,8 @@ import java.util.List;
  */
 @WebServlet("/bookhistory")
 public class BookHistoryServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -29,9 +29,9 @@ public class BookHistoryServlet extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String searchQuery = request.getParameter("search");  // Lấy từ khóa tìm kiếm
         if (searchQuery == null || searchQuery.trim().isEmpty()) {
@@ -51,10 +51,10 @@ public class BookHistoryServlet extends HttpServlet {
         // Lấy danh sách các bản ghi với phân trang và tìm kiếm
         BookHistoryDAO historydao = new BookHistoryDAO();
         List<BookHistory> historyList = historydao.getHistoryWithPaginationAndSearch(start, pageSize, searchQuery);
-        
+
         // Lấy tổng số bản ghi
         int totalRecords = historydao.getTotalRecordsQuery(searchQuery);
-        
+
         // Tính số trang
         int totalPages = (int) Math.ceil(totalRecords * 1.0 / pageSize);
 
@@ -63,17 +63,17 @@ public class BookHistoryServlet extends HttpServlet {
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("currentPage", page);
         request.setAttribute("search", searchQuery);
-        
+
         request.getRequestDispatcher("ChangeLog.jsp").forward(request, response);
     }
 
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // TODO Auto-generated method stub
+        doGet(request, response);
+    }
 
 }
