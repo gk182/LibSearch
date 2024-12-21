@@ -20,7 +20,7 @@
     </div>
     <div class="flex justify-around w-5/6">
         <div class="w-2/3">
-            <form action="/LibSearch_war_exploded/books" method="get" class="flex items-center relative w-full">
+            <form action="/LibSearch_war_exploded" method="get" class="flex items-center relative w-full">
                 <input type="text" name="query" class="form-control me-2"
                        value="<%= request.getParameter("query") != null ? request.getParameter("query") : "" %>"
                        placeholder="Enter book title, author, or category">

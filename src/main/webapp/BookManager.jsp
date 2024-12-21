@@ -236,7 +236,10 @@
                                     <label for="editUpdatedBy" class="form-label">Updated By</label>
                                     <input type="text" class="form-control" id="editUpdatedBy" name="updatedBy" required>
                                 </div>
-
+<%--                                <div class="mb-3">--%>
+<%--                                    <label for="editBookShelf" class="form-label">Book Shelf</label>--%>
+<%--                                    <input type="text" class="form-control" id="editBookShelf" name="bookShelf" required>--%>
+<%--                                </div>--%>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary" >Save changes</button>
